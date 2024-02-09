@@ -1,6 +1,5 @@
-export type UserType = {
-  id: string;
+export class IUserDto {
   username: string;
   age: number;
   hobbies: string[];
-};
+}

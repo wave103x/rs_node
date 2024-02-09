@@ -1,12 +1,10 @@
 import { IncomingMessage, ServerResponse, createServer } from "http";
-import { usersData } from "./model/usersData";
-import { Buffer } from "buffer";
-import { UserRouter } from "./entities/users/users.router";
+import { UserController } from "./entities/users/users.controller";
 
 createServer(function (req: IncomingMessage, res: ServerResponse) {
   const reqUrl = new URL(req.url, `http://${req.headers.host}`);
 
-  if (reqUrl.pathname.startsWith("/api/users")) new UserRouter(req, res)
+  if (reqUrl.pathname.startsWith("/api/users")) new UserController(req, res)
 
   res.end();
 }).listen(80);
