@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "webpack",
-    "start": "webpack serve --open"
+    "start": "webpack serve --open",
+    "start:dev": "tsnd --respawn ./src/index.ts"
   },
   "keywords": [],
   "author": "",

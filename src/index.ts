@@ -5,6 +5,4 @@ createServer(function (req: IncomingMessage, res: ServerResponse) {
   const reqUrl = new URL(req.url, `http://${req.headers.host}`);
 
   if (reqUrl.pathname.startsWith("/api/users")) new UserController(req, res)
-
-  res.end();
 }).listen(80);

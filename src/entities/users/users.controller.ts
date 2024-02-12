@@ -18,11 +18,14 @@ export class UserController {
       case "POST":
         this.createUser(req, res);
         break;
+      case "PUT":
+        this.updateUser(req, res, param);
+        break;
     }
   }
 
   private getParams(url: URL) {
-    const regex = new RegExp(/(?<=api\/users\/)\d+/gim);
+    const regex = new RegExp(/(?<=api\/users\/).+/gim);
     const param = url.pathname.match(regex);
     return param && param[0];
   }
@@ -52,21 +55,36 @@ export class UserController {
     }
   }
 
-  async createUser(req: IncomingMessage, res: ServerResponse) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    const dataRaw = await this.parseBody(req);
-    res.end('dd')
-    const dataString = dataRaw.toString()
-    const data = JSON.parse(dataString) as object;
-    if ('username' in data && 'age' in data && 'hobbies' in data) {
-      if (typeof data.username === 'string' && typeof data.age === 'number' && Array.isArray(data.hobbies) ) {
-        const newUser = userService.createOne(data as IUserDto);
+  async updateUser(req: IncomingMessage, res: ServerResponse, id: string) {
+    try {
+      const user = await this.parseUserBody(req);
+      const updatedUser = userService.updateOne(user, id);
+      res.end(updatedUser);
+    } catch (e) {
+      if (e instanceof Error) {
+        res.statusCode = 400;
+        res.end(e.message);
+      } else {
+        res.statusCode = 404;
+        res.end("user not found");
       }
     }
   }
 
-  private async parseBody(req: IncomingMessage): Promise<Uint8Array[]> {
-    return new Promise((resolve, reject) => {
+  async createUser(req: IncomingMessage, res: ServerResponse) {
+    try {
+      const data = await this.parseUserBody(req);
+      const newUser = userService.createOne(data as IUserDto);
+      res.writeHead(201, { "Content-Type": "text/plain" });
+      res.end(newUser);
+    } catch (e) {
+      res.statusCode = 400;
+      res.end(e);
+    }
+  }
+
+  private async parseUserBody(req: IncomingMessage): Promise<IUserDto> {
+    const promise = new Promise<Uint8Array[]>((resolve, reject) => {
       const chunks: Uint8Array[] = [];
 
       req.on("data", (chunk) => {
@@ -81,5 +99,18 @@ export class UserController {
         reject(err);
       });
     });
+
+    const buffer = await promise;
+    const data = JSON.parse(buffer.toString()) as object;
+
+    if ("username" in data && "age" in data && "hobbies" in data) {
+      if (
+        typeof data.username === "string" &&
+        typeof data.age === "number" &&
+        Array.isArray(data.hobbies)
+      ) {
+        return data as IUserDto;
+      }
+    } else throw "no required data provided";
   }
 }
