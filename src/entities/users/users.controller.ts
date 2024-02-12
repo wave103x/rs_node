@@ -21,6 +21,9 @@ export class UserController {
       case "PUT":
         this.updateUser(req, res, param);
         break;
+      case "DELETE":
+        this.deleteUser(req, res, param);
+        break;
     }
   }
 
@@ -80,6 +83,23 @@ export class UserController {
     } catch (e) {
       res.statusCode = 400;
       res.end(e);
+    }
+  }
+
+  deleteUser(req: IncomingMessage, res: ServerResponse, id: string) {
+    try {
+      userService.deleteOne(id);
+      res.writeHead(204, { "Content-Type": "application/json" });
+      //todo: res not provided
+      res.end("deleted 2");
+    } catch (e) {
+      if (e instanceof Error) {
+        res.statusCode = 400;
+        res.end(e.message);
+      } else {
+        res.statusCode = 404;
+        res.end("user not found");
+      }
     }
   }
 

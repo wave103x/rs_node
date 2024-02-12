@@ -3,7 +3,7 @@ import { IUserDto } from "./dto/user.dto";
 import UuidService from "./lib/uuid.service";
 
 class UserService {
-  constructor(private users: IUser[] = UuidService.generateData(10)) {}
+  constructor(private users: IUser[] = UuidService.generateData(4)) {}
 
   findAll() {
     return Buffer.from(JSON.stringify(this.users));
@@ -15,13 +15,22 @@ class UserService {
     throw new Error("no user found");
   }
 
-  updateOne(body: IUserDto, id: string) {
-    if (!UuidService.isUudid(id)) throw new Error('invalid data provided')
+  deleteOne(id: string) {
+    if (!UuidService.isUudid(id)) throw new Error("invalid data provided");
 
     const userIdx = this.users.findIndex((item) => item.id === id);
 
-    if (userIdx === -1)
-      throw "no user found with provided Id";
+    if (userIdx === -1) throw "no user found with provided Id";
+
+    this.users.splice(userIdx, 1);
+  }
+
+  updateOne(body: IUserDto, id: string) {
+    if (!UuidService.isUudid(id)) throw new Error("invalid data provided");
+
+    const userIdx = this.users.findIndex((item) => item.id === id);
+
+    if (userIdx === -1) throw "no user found with provided Id";
 
     const updatedUser: IUser = {
       ...body,
