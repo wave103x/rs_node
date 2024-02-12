@@ -89,8 +89,8 @@ export class UserController {
   deleteUser(req: IncomingMessage, res: ServerResponse, id: string) {
     try {
       userService.deleteOne(id);
-      res.writeHead(204, { "Content-Type": "application/json" });
-      //todo: res not provided
+      res.statusCode = 204;
+      //todo: res.end not working
       res.end("deleted 2");
     } catch (e) {
       if (e instanceof Error) {

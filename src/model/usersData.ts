@@ -1,3 +1,3 @@
-import { generateData } from "../entities/users/lib/uuid.service";
+import UuidService from "../entities/users/lib/uuid.service";
 
-export const usersData = generateData(10);
+export const usersData = UuidService.generateData(10);
